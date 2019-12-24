@@ -9,6 +9,8 @@ black = "==19.3b0"
 
 [packages]
 python-dotenv = "==0.10.3"
+pytz = "==2019.3"
+pandas = "==0.25.3"
 
 [requires]
 python_version = "3.7"
