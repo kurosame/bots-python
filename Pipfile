@@ -8,6 +8,7 @@ pylint = "==2.3.1"
 black = "==19.3b0"
 
 [packages]
+python-dotenv = "==0.10.3"
 
 [requires]
 python_version = "3.7"
