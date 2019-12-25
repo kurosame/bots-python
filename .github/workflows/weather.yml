@@ -2,13 +2,13 @@ name: Weather
 
 on:
   schedule:
-    - cron: '50 * * * *'
+    - cron: '25 * * * *'
 
 jobs:
   weather:
     name: Run weather
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/circleci/python:3.7
       - name: Run weather
-        uses: docker://circleci/python:3.7
         run: pipenv run python3 ./bots/weather.py
