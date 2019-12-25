@@ -1,16 +1,58 @@
-import json
 import os
+import json
 import pandas as pd
-from datetime import datetime
 from dotenv import load_dotenv
-from pytz import timezone
 from urllib.request import urlopen
+from datetime import datetime
+from pytz import timezone
+from linebot import LineBotApi
+from linebot.models import TextSendMessage
+
+
+def get_weather_icon(icon_str):
+    if icon_str == "01d" or icon_str == "01n":
+        return "☀️"
+    elif (
+        icon_str == "02d"
+        or icon_str == "02n"
+        or icon_str == "03d"
+        or icon_str == "03n"
+        or icon_str == "04d"
+        or icon_str == "04n"
+    ):
+        return "☁️"
+    elif (
+        icon_str == "09d" or icon_str == "09n" or icon_str == "10d" or icon_str == "10n"
+    ):
+        return "☂️"
+    elif icon_str == "11d" or icon_str == "11n":
+        return "⚡️"
+    elif icon_str == "13d" or icon_str == "13n":
+        return "☃️"
+    else:
+        return ""
+
+
+def send_to_line(df):
+    texts = []
+    for k, v in df:
+        texts.append(f"【{k}】")
+        for _, d in v.iterrows():
+            texts.append(
+                f"{d['time']}時 {get_weather_icon(d['icon'])} {d['temp']}(℃) {d['rain']}(mm/3h)"
+            )
+        texts.append("")
+
+    line_bot = LineBotApi(os.getenv("LINE_ACCESS_TOKEN"))
+    line_bot.push_message(
+        os.getenv("LINE_USER_ID"), TextSendMessage(text="\n".join(texts))
+    )
 
 
 def main():
     url = "http://api.openweathermap.org/data/2.5/forecast"
-    id = os.getenv("PLACE_ID")
-    api_key = os.getenv("API_KEY")
+    id = os.getenv("OWM_PLACE_ID")
+    api_key = os.getenv("OWM_API_KEY")
 
     res = urlopen(f"{url}?id={id}&appid={api_key}&lang=ja&units=metric").read()
     res_json = json.loads(res)
@@ -27,8 +69,7 @@ def main():
         conv_rj["rain"] = round(rj["rain"]["3h"], 1) if "rain" in rj else 0
         arr_rj.append(conv_rj)
 
-    print(pd.DataFrame(arr_rj).groupby("date").groups)
-    print(pd.DataFrame(arr_rj).groupby("date").get_group("12/29 Sun"))
+    send_to_line(pd.DataFrame(arr_rj).groupby("date"))
 
 
 load_dotenv()
