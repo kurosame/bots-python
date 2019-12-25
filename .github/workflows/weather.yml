@@ -2,7 +2,7 @@ name: Weather
 
 on:
   schedule:
-    - cron: '25 * * * *'
+    - cron: '36 * * * *'
 
 jobs:
   weather:
