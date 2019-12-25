@@ -1,0 +1,13 @@
+name: Weather
+
+on:
+  schedule:
+    - cron: '38 * * * *'
+
+jobs:
+  weather:
+    name: Run weather
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run weather
+        run: pipenv run python3 ./bots/weather.py
