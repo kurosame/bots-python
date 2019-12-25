@@ -2,13 +2,21 @@ name: Weather
 
 on:
   schedule:
-    - cron: '46 * * * *'
+    - cron: '09 * * * *'
 
 jobs:
   weather:
     name: Run weather
     runs-on: ubuntu-latest
     steps:
-      - uses: docker://circleci/python:3.7
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install Pipenv
+        uses: dschep/install-pipenv-action@v1
+      - name: Install dependencies
+        run: pipenv sync
       - name: Run weather
         run: pipenv run python3 ./bots/weather.py
