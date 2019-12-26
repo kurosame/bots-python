@@ -33,11 +33,11 @@ def get_weather_icon(icon_str):
         return ""
 
 
-def send_to_line(df):
+def send_to_line(dfg):
     texts = []
-    for k, v in df:
+    for k, df in dfg:
         texts.append(f"【{k}】")
-        for _, d in v.iterrows():
+        for _, d in df.iterrows():
             texts.append(
                 f"{d['time']}時 {get_weather_icon(d['icon'])} {d['temp']}(℃) {d['rain']}(mm/3h)"
             )
@@ -69,7 +69,9 @@ def main():
         conv_rj["rain"] = round(rj["rain"]["3h"], 1) if "rain" in rj else 0
         arr_rj.append(conv_rj)
 
-    send_to_line(pd.DataFrame(arr_rj).groupby("date"))
+    df = pd.DataFrame(arr_rj)
+    print(df)
+    send_to_line(df.groupby("date"))
 
 
 load_dotenv()
