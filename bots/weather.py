@@ -44,8 +44,8 @@ def send_to_line(dfg):
         texts.append("")
 
     line_bot = LineBotApi(os.getenv("LINE_ACCESS_TOKEN"))
-    line_bot.push_message(
-        os.getenv("LINE_USER_ID"), TextSendMessage(text="\n".join(texts))
+    line_bot.multicast(
+        os.getenv("LINE_USER_ID").split(","), TextSendMessage(text="\n".join(texts))
     )
 
 
