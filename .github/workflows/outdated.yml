@@ -2,7 +2,7 @@ name: Outdated
 
 on:
   schedule:
-    - cron: '33 * * * *'
+    - cron: '42 * * * *'
 
 jobs:
   outdated:
