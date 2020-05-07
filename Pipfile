@@ -8,7 +8,7 @@ pylint = "==2.3.1"
 black = "==19.3b0"
 
 [packages]
-python-dotenv = "==0.10.3"
+python-dotenv = "==0.13.0"
 pytz = "==2019.3"
 pandas = "==0.25.3"
 line-bot-sdk = "==1.15.0"
