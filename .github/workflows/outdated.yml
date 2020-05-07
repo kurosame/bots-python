@@ -2,7 +2,7 @@ name: Outdated
 
 on:
   schedule:
-    - cron: '05 * * * *'
+    - cron: '25 * * * *'
 
 jobs:
   outdated:
@@ -26,6 +26,8 @@ jobs:
       #       ${{ runner.os }}-
       - name: Install dependencies
         run: pipenv sync
+      - name: Install dependenciesaaaaaaa
+        run: pipenv update --outdated
       - name: Run outdated
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
