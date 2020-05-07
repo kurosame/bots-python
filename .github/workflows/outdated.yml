@@ -2,7 +2,7 @@ name: Outdated
 
 on:
   schedule:
-    - cron: '42 * * * *'
+    - cron: '14 * * * *'
 
 jobs:
   outdated:
@@ -26,8 +26,6 @@ jobs:
             ${{ runner.os }}-
       - name: Install dependencies
         run: pipenv sync
-      - name: Install dependenciesaaaaaaa
-        run: pipenv update --outdated
       - name: Run outdated
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -37,7 +35,7 @@ jobs:
             "attachments": [
               {
                 "pretext": "bots-python's Outdated",
-                "text": '$(pipenv update --dry-run)'
+                "text": '$(pipenv run pip list -o)'
               }
             ]
           }
