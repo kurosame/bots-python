@@ -2,7 +2,7 @@ name: Outdated
 
 on:
   schedule:
-    - cron: '14 * * * *'
+    - cron: '39 * * * *'
 
 jobs:
   outdated:
@@ -35,7 +35,7 @@ jobs:
             "attachments": [
               {
                 "pretext": "bots-python's Outdated",
-                "text": '$(pipenv run pip list -o)'
+                "text": '$(pipenv run pip list -o --pre)'
               }
             ]
           }
