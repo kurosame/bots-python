@@ -2,7 +2,7 @@ name: Outdated
 
 on:
   schedule:
-    - cron: '25 * * * *'
+    - cron: '33 * * * *'
 
 jobs:
   outdated:
@@ -16,14 +16,14 @@ jobs:
           python-version: 3.7
       - name: Install Pipenv
         uses: dschep/install-pipenv-action@v1
-      # - name: Cache dependencies
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: ~/.cache/pipenv
-      #     key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pipenv-
-      #       ${{ runner.os }}-
+      - name: Cache dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pipenv
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+            ${{ runner.os }}-
       - name: Install dependencies
         run: pipenv sync
       - name: Install dependenciesaaaaaaa
@@ -37,7 +37,7 @@ jobs:
             "attachments": [
               {
                 "pretext": "bots-python's Outdated",
-                "text": '$(pipenv update --outdated)'
+                "text": '$(pipenv update --dry-run)'
               }
             ]
           }
