@@ -12,3 +12,12 @@ OWM_API_KEY       # OpenWeatherMap API api key
 LINE_ACCESS_TOKEN # LINE Messaging API access token
 LINE_USER_ID      # LINE User ID (When multiple users, Separate to comma)
 ```
+
+## pre-commit
+
+If you use [pre-commit](https://github.com/pre-commit/pre-commit), run the following
+
+```sh
+brew install pre-commit
+pre-commit install
+```
