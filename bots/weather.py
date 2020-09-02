@@ -1,45 +1,37 @@
+""" Get weather from OpenWeatherMap API, then notify LINE Bot """
 import os
 import json
-import pandas as pd
-from dotenv import load_dotenv
 from urllib.request import urlopen
 from datetime import datetime
+import pandas as pd
+from dotenv import load_dotenv
 from pytz import timezone
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
 
-def get_weather_icon(icon_str):
-    if icon_str == "01d" or icon_str == "01n":
-        return "☀️"
-    elif (
-        icon_str == "02d"
-        or icon_str == "02n"
-        or icon_str == "03d"
-        or icon_str == "03n"
-        or icon_str == "04d"
-        or icon_str == "04n"
-    ):
-        return "☁️"
-    elif (
-        icon_str == "09d" or icon_str == "09n" or icon_str == "10d" or icon_str == "10n"
-    ):
-        return "☂️"
-    elif icon_str == "11d" or icon_str == "11n":
-        return "⚡️"
-    elif icon_str == "13d" or icon_str == "13n":
-        return "☃️"
-    else:
-        return ""
+def _get_icon(icon_str):
+    icon = ""
+    if icon_str in ("01d", "01n"):
+        icon = "☀️"
+    elif icon_str in ("02d", "02n", "03d", "03n", "04d", "04n"):
+        icon = "☁️"
+    elif icon_str in ("09d", "09n", "10d", "10n"):
+        icon = "☂️"
+    elif icon_str in ("11d", "11n"):
+        icon = "⚡️"
+    elif icon_str in ("13d", "13n"):
+        icon = "☃️"
+    return icon
 
 
-def send_to_line(dfg):
+def _send_to_line(dfg):
     texts = []
-    for k, df in dfg:
+    for k, dfv in dfg:
         texts.append(f"【{k}】")
-        for _, d in df.iterrows():
+        for _, row in dfv.iterrows():
             texts.append(
-                f"{d['time']}時 {get_weather_icon(d['icon'])} {d['temp']}(℃) {d['rain']}(mm/3h)"
+                f"{row['time']}時 {_get_icon(row['icon'])} {row['temp']}(℃) {row['rain']}(mm/3h)"
             )
         texts.append("")
 
@@ -50,29 +42,32 @@ def send_to_line(dfg):
 
 
 def main():
+    """ Get weather from OpenWeatherMap API, then notify LINE Bot """
     url = "http://api.openweathermap.org/data/2.5/forecast"
-    id = os.getenv("OWM_PLACE_ID")
+    place_id = os.getenv("OWM_PLACE_ID")
     api_key = os.getenv("OWM_API_KEY")
 
-    res = urlopen(f"{url}?id={id}&appid={api_key}&lang=ja&units=metric").read()
+    res = urlopen(f"{url}?id={place_id}&appid={api_key}&lang=ja&units=metric").read()
     res_json = json.loads(res)
 
     arr_rj = []
-    for rj in res_json["list"]:
+    for obj in res_json["list"]:
         conv_rj = {}
-        timestamp = timezone("Asia/Tokyo").localize(datetime.fromtimestamp(rj["dt"]))
+        timestamp = timezone("Asia/Tokyo").localize(datetime.fromtimestamp(obj["dt"]))
         conv_rj["date"] = timestamp.strftime("%m/%d %a")
         conv_rj["time"] = timestamp.strftime("%H")
-        conv_rj["description"] = rj["weather"][0]["description"]
-        conv_rj["icon"] = rj["weather"][0]["icon"]
-        conv_rj["temp"] = round(rj["main"]["temp"])
-        conv_rj["temp_max"] = round(rj["main"]["temp_max"]) # Only `16 Day forecast` works
-        conv_rj["rain"] = round(rj["rain"]["3h"], 1) if "rain" in rj else 0
+        conv_rj["description"] = obj["weather"][0]["description"]
+        conv_rj["icon"] = obj["weather"][0]["icon"]
+        conv_rj["temp"] = round(obj["main"]["temp"])
+        conv_rj["temp_max"] = round(
+            obj["main"]["temp_max"]
+        )  # Only `16 Day forecast` works
+        conv_rj["rain"] = round(obj["rain"]["3h"], 1) if "rain" in obj else 0
         arr_rj.append(conv_rj)
 
-    df = pd.DataFrame(arr_rj)
-    print(df)
-    send_to_line(df.groupby("date"))
+    dframe = pd.DataFrame(arr_rj)
+    print(dframe)
+    _send_to_line(dframe.groupby("date"))
 
 
 load_dotenv()
