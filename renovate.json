@@ -1,5 +1,8 @@
 {
-  "extends": ["config:base", ":timezone(Asia/Tokyo)", "schedule:daily", ":prHourlyLimitNone", ":automergePatch"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base", ":automergePatch", ":timezone(Asia/Tokyo)", "schedule:daily"],
+  "automergeType": "branch",
+  "prHourlyLimit": 0,
   "prConcurrentLimit": 3,
   "packageRules": [
     {
