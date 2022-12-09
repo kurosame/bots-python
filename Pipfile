@@ -11,7 +11,7 @@ black = "==19.3b0"
 python-dotenv = "==0.13.0"
 pytz = "==2019.3"
 pandas = "==0.25.3"
-line-bot-sdk = "==1.15.0"
+line-bot-sdk = "==1.20.0"
 
 [requires]
 python_version = "3.7"

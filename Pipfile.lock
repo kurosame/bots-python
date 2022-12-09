@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b1308de03f71196d2829b8e56bc18e1c9a5f07064d246dc8ea4b72648a79bbd9"
+            "sha256": "3bc3e839431352ba08d48352310c61f794e23c4ee4b91626b5e75ef646735c9c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -21,7 +21,7 @@
                 "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3",
                 "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"
             ],
-            "index": "pypi",
+            "markers": "python_version >= '3.6'",
             "version": "==2022.12.7"
         },
         "charset-normalizer": {
@@ -29,7 +29,7 @@
                 "sha256:5a3d016c7c547f69d6f81fb0db9449ce888b418b5b9952cc5e6e66843e9dd845",
                 "sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f"
             ],
-            "markers": "python_version >= '3.6'",
+            "markers": "python_full_version >= '3.6.0'",
             "version": "==2.1.1"
         },
         "future": {
@@ -49,11 +49,11 @@
         },
         "line-bot-sdk": {
             "hashes": [
-                "sha256:12d0d4ff7d049a131f551424df948d3372bb362f53ea251afc2110b3217f92ef",
-                "sha256:950ef0e7be624c464be50d1d4570b07d0e8cbe83a7e4a51247964d0c53aaba12"
+                "sha256:c31822dd277e1296501fe7b2f656df83c2aba2655dacaddb8f5fc77b98f6ae59",
+                "sha256:e68d1efe8ec2b99f3cf11ad4497f955d5ce72a737709bda6fd4a09144bf64574"
             ],
             "index": "pypi",
-            "version": "==1.15.0"
+            "version": "==1.20.0"
         },
         "numpy": {
             "hashes": [
