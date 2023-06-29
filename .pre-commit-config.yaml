@@ -1,9 +1,0 @@
-repos:
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.3.1
-    hooks:
-      - id: pylint
-  - repo: https://github.com/ambv/black
-    rev: 19.3b0
-    hooks:
-      - id: black

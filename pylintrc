@@ -1,6 +1,0 @@
-[MESSAGES CONTROL]
-disable=
-  # Pylint runs in virtualenv instead of venv
-  import-error,
-  # Conflict to black
-  bad-continuation
