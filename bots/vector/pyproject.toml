@@ -1,0 +1,16 @@
+[project]
+name = "transform-vector"
+version = "0.1.0"
+description = "Load the file and transform to vector"
+dependencies = []
+requires-python = ">= 3.11"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
