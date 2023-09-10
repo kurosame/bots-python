@@ -2,7 +2,10 @@
 name = "transform-vector"
 version = "0.1.0"
 description = "Load the file and transform to vector"
-dependencies = []
+dependencies = [
+    "python-dotenv~=1.0.0",
+    "supabase~=1.0.4",
+]
 requires-python = ">= 3.11"
 
 [build-system]

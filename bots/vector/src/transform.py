@@ -33,5 +33,42 @@
 #     }
 # )
 
+
+import os
+
+from dotenv import load_dotenv
+from supabase import create_client
+
+load_dotenv(verbose=True)
+
+
+def create_supabase_client():
+    supabase = create_client(
+        os.environ.get("SUPABASE_API_URL"), os.environ.get("SUPABASE_API_KEY")
+    )
+    auth = supabase.auth.sign_in_with_password(
+        {
+            "email": os.environ.get("SUPABASE_GLOSSARY_EMAIL"),
+            "password": os.environ.get("SUPABASE_GLOSSARY_PASSWORD"),
+        }
+    )
+    supabase.postgrest.auth(auth.session.access_token)
+
+    return supabase
+
+
 if __name__ == "__main__":
-    print("aaaaaaaa")
+    supabase = create_supabase_client()
+
+    for root, _, files in os.walk(os.environ["DIR_PATH"]):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_name = os.path.splitext(os.path.basename(file_path))[0]
+
+            with open(file_path, "r") as f:
+                supabase.table("raw_data").insert(
+                    json={"title": file_name, "data": f.read()}, upsert=True
+                ).execute()
+                break
+
+    supabase.auth.sign_out()
