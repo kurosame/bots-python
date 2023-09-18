@@ -1,6 +1,8 @@
 import os
 
 from dotenv import load_dotenv
+from langchain.chains import RetrievalQA
+from langchain.chat_models import AzureChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.schema import Document
 from langchain.vectorstores import SupabaseVectorStore
@@ -38,7 +40,7 @@ if __name__ == "__main__":
         for file in files:
             file_path = os.path.join(root, file)
 
-            with open(os.path.join(root, file), "r") as f:
+            with open(file_path, "r") as f:
                 lines = f.readlines()
 
                 category = ""
@@ -77,12 +79,34 @@ if __name__ == "__main__":
     supabase.table("documents").delete().neq("content", None).execute()
 
     store = SupabaseVectorStore.from_documents(
-        docs,
-        embeddings,
+        documents=docs,
+        embedding=embeddings,
         client=supabase,
         table_name="documents",
         query_name="match_documents",
     )
+
+    store2 = SupabaseVectorStore(
+        client=supabase,
+        embedding=embeddings,
+        table_name="documents",
+        query_name="match_documents",
+    )
+
     print(store)
+    print(store2)
+
+    qa = RetrievalQA.from_chain_type(
+        llm=AzureChatOpenAI(
+            model=os.environ.get("OPENAI_GPT4_32K_MODEL"),
+            deployment_name=os.environ.get("OPENAI_GPT4_32K_DEPLOYMENT"),
+            temperature=0,
+        ),
+        chain_type="stuff",
+        retriever=store.as_retriever(),
+    )
+    answer = qa.run("npmについて教えて")
+
+    print(answer)
 
     supabase.auth.sign_out()
