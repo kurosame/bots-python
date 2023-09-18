@@ -1,42 +1,9 @@
-# from transformers import AutoTokenizer, AutoModel
-# import torch
-# import numpy as np
-# from supabase_py import create_client
-
-# # Initialize Supabase client
-# url = "your-supabase-url"
-# key = "your-supabase-key"
-# supabase = create_client(url, key)
-
-# # Initialize transformer model and tokenizer
-# tokenizer = AutoTokenizer.from_pretrained("Supabase/gte-small")
-# model = AutoModel.from_pretrained("Supabase/gte-small")
-
-# # Define text data
-# title = "First post!"
-# body = "Hello world!"
-
-# # Generate a vector using transformers
-# inputs = tokenizer(body, return_tensors="pt")
-# outputs = model(**inputs)
-
-# # Pooling and normalization
-# embedding = torch.mean(outputs.last_hidden_state, dim=1).detach().numpy()
-# embedding = embedding / np.linalg.norm(embedding)
-
-# # Store the vector in Postgres
-# data, error = supabase.from_("posts").insert(
-#     {
-#         "title": title,
-#         "body": body,
-#         "embedding": embedding.tolist(),
-#     }
-# )
-
-
 import os
 
 from dotenv import load_dotenv
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.schema import Document
+from langchain.vectorstores import SupabaseVectorStore
 from supabase import create_client
 
 load_dotenv(verbose=True)
@@ -59,16 +26,63 @@ def create_supabase_client():
 
 if __name__ == "__main__":
     supabase = create_supabase_client()
+    embeddings = OpenAIEmbeddings(
+        model=os.environ.get("OPENAI_EMBEDDINGS_MODEL"),
+        deployment=os.environ.get("OPENAI_EMBEDDINGS_DEPLOYMENT"),
+        chunk_size=1,
+    )
+
+    docs = []
 
     for root, _, files in os.walk(os.environ["DIR_PATH"]):
         for file in files:
             file_path = os.path.join(root, file)
-            file_name = os.path.splitext(os.path.basename(file_path))[0]
 
-            with open(file_path, "r") as f:
-                supabase.table("raw_data").insert(
-                    json={"title": file_name, "data": f.read()}, upsert=True
-                ).execute()
-                break
+            with open(os.path.join(root, file), "r") as f:
+                lines = f.readlines()
+
+                category = ""
+                titles = []
+                is_titles = False
+                description = ""
+                is_description = False
+
+                for i in range(len(lines)):
+                    if lines[i].strip() == "## category":
+                        category = lines[i + 2].strip()
+                    if is_titles:
+                        if lines[i].strip() == "## description":
+                            is_titles = False
+                        elif lines[i].strip() != "":
+                            titles.append(lines[i].strip())
+                    if lines[i].strip() == "## titles":
+                        is_titles = True
+                    if is_description:
+                        description += lines[i].strip()
+                    if lines[i].strip() == "## description":
+                        is_description = True
+
+                docs.append(
+                    Document(
+                        page_content=description,
+                        metadata={
+                            "category": category,
+                            "titles": titles,
+                        },
+                    )
+                )
+            break
+
+    # Delete all rows of a table
+    supabase.table("documents").delete().neq("content", None).execute()
+
+    store = SupabaseVectorStore.from_documents(
+        docs,
+        embeddings,
+        client=supabase,
+        table_name="documents",
+        query_name="match_documents",
+    )
+    print(store)
 
     supabase.auth.sign_out()
