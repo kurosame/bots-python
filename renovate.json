@@ -5,7 +5,6 @@
   "prConcurrentLimit": 3,
   "packageRules": [
     {
-      "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["patch"],
       "enabled": false
     }
